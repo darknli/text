@@ -1,0 +1,64 @@
+bjective-C的属性(property)是通过用@property定义的公有或私有的方法.例如:@property(readonly, getter=isBlue) BOOL blue;
+属性捕获了对象的状态.它们反映了对象的固有属性(intrinsic attributes)以及对象与其他对象之间的关系.属性（property）提供了一种安全、便捷的方式来与
+这些属性(attribute)交互,而不需要手动编写一系列的访问方法,如果需要的话可以自定义getter和setter方法来覆盖编译器自动生成的相关方法.
+    尽量多的使用属性（property）而不是实例变量（attribute）因为属性（property）相比实例变量有很多的好处:
+	*
+自动合成getter和setter方法.当声明一个属性(property)的时候编译器默认情况下会自动生成相关的getter和setter方法
+	*
+更好的声明一组方法.因为访问方法的命名约定,可以很清晰的看出getter和setter的用处.
+	*
+属性(property)关键词能够传递出相关行为的额外信息.属性提供了一些可能会使用的特性来进行声明,包括assign(vscopy),weak,strong,atomic(vsnonatomic),readwrite,readonly等.
+
+
+属性方法遵守一个简单的命名约定.getter的名字与属性名相同(如:属性名为date则getter的名字也为date),setter的名字则是属性名字加上
+set前缀并采用驼峰命名规则(如:属性名为date则setter的名字为setDate).布尔类型的属性还可以定义一个以is开头的getter方法,如：
+@property (readonly, getter=isBlue) BOOL blue;
+如果按照上面的方法声明则以下所有访问方式都正确:
+
+if (color.blue) {}
+if (color.isBlue) {}
+if ([color isBlue]) {}
+当决定什么东西可以作为一个属性的时候,需要注意以下这些不属于属性:
+	*
+init方法
+	*
+copy和mutableCopy方法
+	*
+类工厂方法
+	*
+开启某项操作并返回一个BOOL结果的方法
+	*
+明确的改变了一个getter的内部状态的副作用方法
+
+
+除此之外,在你的代码中使用属性特性的时候请考虑以下规则:
+	*
+一个可读写(read/write)的属性有两个访问方法.setter方法是有一个参数的无返回值方法,getter方法是没有参数的
+且有一个返回值的方法,返回值类型与属性声明的类型一致.如果将这组方法转换成一个属性,就可以用readwrite关键字来标记它(默认即为readwrite可不写).
+	*
+一个只读(read-only)的属性只有一个访问方法.即getter方法,它不接受任何参数,并且返回一个值.如果将这个方法转换成一个属性,就可以用readonly关键字标记它.
+	*
+getter方法应当是幂等(idempotent)的(如果一个getter方法被调用两次,那么第二次调用时返回的结果应该和第一调用时返回的结果相同).
+然而,如果一个getter方法每次调用时,是被用于计算结果,这是可以接受的.
+
+如何适配
+识别出一组可以被转换成一个属性的方法,如这些方法：
+
+- (NSColor *)backgroundColor;
+- (void)setBackgroundColor:(NSColor *)color;
+用@property语法和适当的关键字将它们定义成一个属性：
+@property (copy) NSColor *backgroundColor;
+
+有关属性关键词和其他注意事项,可以阅读Encapsulating Data.
+或者,你也可以使用Xcode中的modern Objective-C转换器来自动转换你的代码.参考Refactoring Your Code Using Xcode.
+
+	* 调度器（Scheduler）：爬虫程序入口,存放request队列,供Scrapy Engine使用.
+	*
+Scrapy引擎（Scrapy Engine）：负责爬虫整个项目的控制,根据给他的内容而分给相应的模块.
+	*
+爬虫器（Spider）：负责爬虫拿到的数据.
+	*
+下载器（Downloader）：负责下载指定的数据.非必要
+	*
+项目（Item Pipline）：定义返回类型.非必要
+
